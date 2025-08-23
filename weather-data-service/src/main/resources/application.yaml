@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: weather-data-service
+  kafka:
+    bootstrap-servers: localhost:9094
+    properties:
+      acks: all
+      retries: 3
+      enable.idempotence: true
+      auto.register.schemas: true
+      use.latest.version: true
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      properties:
+        schema.registry.url: http://localhost:8081
+
+kafka:
+  weather:
+    topic:
+      raw: weather.raw
+
+openweather:
+  api:
+    key: d8cd50b29b80d2f47dbed0bd9cc6872c
+    url: http://api.openweathermap.org
+
+scheduler:
+  weather:
+    cron: "0 */5 * * * *"
