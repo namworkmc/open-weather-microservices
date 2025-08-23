@@ -1,0 +1,37 @@
+{
+  "type": "record",
+  "name": "HotWeatherAlertEvent",
+  "namespace": "org.sideprj.openweathermicroservices.avro",
+  "fields": [
+    {
+      "name": "city",
+      "type": "string",
+      "doc": "City name"
+    },
+    {
+      "name": "country",
+      "type": "string",
+      "doc": "Country name"
+    },
+    {
+      "name": "timestamp",
+      "type": "long",
+      "doc": "Unix timestamp in milliseconds"
+    },
+    {
+      "name": "temperature",
+      "type": "double",
+      "doc": "Current temperature in Celsius"
+    },
+    {
+      "name": "tempMin",
+      "type": "double",
+      "doc": "Minimum temperature in Celsius"
+    },
+    {
+      "name": "tempMax",
+      "type": "double",
+      "doc": "Maximum temperature in Celsius"
+    }
+  ]
+} 
