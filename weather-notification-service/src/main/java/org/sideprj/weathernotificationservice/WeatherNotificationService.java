@@ -1,13 +1,13 @@
-package org.sideprj.weatheranalyticsservice;
+package org.sideprj.weathernotificationservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WeatherAnalyticsServiceApplication {
+public class WeatherNotificationService {
 
     public static void main(String[] args) {
-        SpringApplication.run(WeatherAnalyticsServiceApplication.class, args);
+        SpringApplication.run(WeatherNotificationService.class, args);
     }
 
 }
