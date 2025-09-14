@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: weather-notification-service
+  data:
+    mongodb:
+      database: weather-notification
+      host: localhost
+      port: 27017
+      username: weathernotificationservice
+      password: weathernotificationservice
+      authentication-database: admin

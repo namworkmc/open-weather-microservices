@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="weather-data-service" />
         <module name="weather-analytics-service" />
+        <module name="weather-notification-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +24,7 @@
       <module name="weather" options="-parameters" />
       <module name="weather-analytics-service" options="-parameters" />
       <module name="weather-data-service" options="-parameters" />
+      <module name="weather-notification-service" options="-parameters" />
     </option>
   </component>
 </project>
