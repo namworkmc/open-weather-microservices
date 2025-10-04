@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="WeatherDataService" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <option name="SCHEDULED_DEBUGGER" value="true" />
+    <module name="weather-data-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.sideprj.weatherdataservice.WeatherDataService" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -15,27 +15,29 @@ spring:
         use.latest.version: true
     consumer:
       group-id: analytics-service
-      auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
         schema.registry.url: http://localhost:8081
         specific.avro.reader: true
-        auto.offset.reset: earliest
     listener:
-      missing-topics-fatal: false
       ack-mode: record
   data:
     mongodb:
       database: weather-analytics
       host: localhost
       port: 27017
-      username: weatheranalyticsservice
-      password: weatheranalyticsservice
+      username: openweather
+      password: openweather
       authentication-database: admin
 
 kafka:
-  weather:
+  internal:
+      topic:
+        hot: internal-hot-weather
+  data:
     topic:
-      raw: weather.raw
-      hot-weather: weather.hot
+      raw: data-raw
+  notification:
+    topic:
+      hot_weather: notification-hot-weather

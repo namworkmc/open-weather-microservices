@@ -15,12 +15,53 @@ spring:
       properties:
         schema.registry.url: http://localhost:8081
 
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        sliding-window-size: 10
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state:
+          seconds: 10
+        failure-rate-threshold: 50
+        event-consumer-buffer-size: 10
+        record-exceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.io.IOException
+    instances:
+      openWeatherApiClient:
+        base-config: default
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        retry-exceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.io.IOException
+    instances:
+      openWeatherApiClient:
+        base-config: default
+  ratelimiter:
+    configs:
+      default:
+        limit-for-period: 1
+        limit-refresh-period:
+          seconds: 60
+        timeout-duration:
+          seconds: 0
+        register-health-indicator: true
+    instances:
+      openWeatherApiClient:
+        base-config: default
+
 kafka:
-  weather:
+  data:
     topic:
-      raw: weather.raw
+      raw: data-raw
 
 openweather:
+  supported-cities: Seoul,Tokyo,New York,London,Paris
   api:
     key: d8cd50b29b80d2f47dbed0bd9cc6872c
     url: http://api.openweathermap.org

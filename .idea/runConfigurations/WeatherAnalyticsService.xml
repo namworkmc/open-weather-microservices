@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="WeatherAnalyticsService" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <module name="weather-analytics-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.sideprj.weatheranalyticsservice.WeatherAnalyticsService" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
