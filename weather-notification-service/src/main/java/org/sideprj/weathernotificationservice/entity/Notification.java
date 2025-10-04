@@ -1,11 +1,14 @@
 package org.sideprj.weathernotificationservice.entity;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "notifications")
-public class Notification {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-    @Id
-    private String id;
+@EqualsAndHashCode(callSuper = true)
+@Document(collection = "notifications")
+@Data
+public class Notification<T> extends AbstractEntity {
+
+    private T message;
 }

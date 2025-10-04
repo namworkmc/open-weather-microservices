@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "OpenWeatherApiClient", url = "${openweather.api.url}", path = "/data/2.5")
 public interface OpenWeatherApiClient {
 
-    @GetMapping("/weather?q={city}")
-    OpenWeatherResponse getWeatherByCity(@PathVariable("city") String city);
+    @GetMapping("/weather?q={city}&units=metric")
+    Model200 getWeatherByCity(@PathVariable("city") String city);
 }

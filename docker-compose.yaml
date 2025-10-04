@@ -100,9 +100,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: weatheranalyticsservice
-      MONGO_INITDB_ROOT_PASSWORD: weatheranalyticsservice
-      MONGO_INITDB_DATABASE: weather-analytics
+      MONGO_INITDB_ROOT_USERNAME: openweather
+      MONGO_INITDB_ROOT_PASSWORD: openweather
     volumes:
       - mongodb-data:/data/db
       - mongodb-config:/data/configdb

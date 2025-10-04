@@ -16,9 +16,11 @@
 	
 	<properties>
 		<spring-cloud-dependencies.version>2025.0.0</spring-cloud-dependencies.version>
+		<weather-commons.version>0.0.1-SNAPSHOT</weather-commons.version>
 	</properties>
 	
 	<dependencies>
+		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -26,6 +28,22 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+
+		<!-- Project -->
+		<dependency>
+			<groupId>org.sideprj</groupId>
+			<artifactId>weather-commons</artifactId>
+			<version>${weather-commons.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -45,36 +63,42 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.avro</groupId>
-				<artifactId>avro-maven-plugin</artifactId>
-				<version>${avro.version}</version>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>7.16.0</version>
 				<executions>
 					<execution>
 						<goals>
-							<goal>schema</goal>
+							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<sourceDirectory>../avro-schema</sourceDirectory>
-							<outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
-							<stringType>String</stringType>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>${project.build.directory}/generated-sources/avro</source>
-							</sources>
+							<inputSpec>${project.basedir}/src/main/resources/openweather_swagger.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<output>${project.build.directory}/generated-sources</output>
+							<modelPackage>org.sideprj.weatherdataservice.feign.client.openweather</modelPackage>
+
+							<!-- Generate only models, no APIs -->
+							<generateModels>true</generateModels>
+							<generateApis>false</generateApis>
+							<generateApiTests>false</generateApiTests>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateSupportingFiles>false</generateSupportingFiles>
+
+							<!-- Explicitly skip files that might reference ApiClient -->
+							<skipOverwrite>false</skipOverwrite>
+
+							<!-- Additional options to exclude schema annotations -->
+							<configOptions>
+								<useSpringBoot3>true</useSpringBoot3>
+								<openApiNullable>false</openApiNullable>
+								<hideGenerationTimestamp>true</hideGenerationTimestamp>
+								<useTags>false</useTags>
+								<useOptional>true</useOptional>
+								<library>spring-cloud</library>
+								<documentationProvider>none</documentationProvider>
+							</configOptions>
 						</configuration>
 					</execution>
 				</executions>

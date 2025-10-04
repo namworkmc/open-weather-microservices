@@ -6,6 +6,26 @@ spring:
       database: weather-notification
       host: localhost
       port: 27017
-      username: weathernotificationservice
-      password: weathernotificationservice
+      username: openweather
+      password: openweather
       authentication-database: admin
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: notification-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        schema.registry.url: http://localhost:8081
+        specific.avro.reader: true
+        spring.json.use.type.headers: false
+    listener:
+      ack-mode: record
+
+debug: true
+
+kafka:
+  notification:
+    topic:
+      hot_weather: notification-hot-weather

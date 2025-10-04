@@ -15,17 +15,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WeatherEvaluatorServiceImpl implements WeatherEvaluatorService {
 
-    private final WeatherEventRepository weatherEventRepo;
+    private final WeatherEventRepository weatherEventRepository;
 
-    private final HotWeatherAlertRepository alertRepo;
+    private final HotWeatherAlertRepository hotWeatherAlertRepository;
 
     @Override
     public void evaluateAndPersist(WeatherEventEntity event) {
-        weatherEventRepo.save(event);
+        weatherEventRepository.save(event);
     }
 
     @Override
     public void evaluateAndPersist(HotWeatherAlertEntity alert) {
-        alertRepo.save(alert);
+        hotWeatherAlertRepository.save(alert);
     }
 }

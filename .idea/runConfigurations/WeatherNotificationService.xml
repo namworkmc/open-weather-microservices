@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="WeatherNotificationService" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <module name="weather-notification-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.sideprj.weathernotificationservice.WeatherNotificationService" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
