@@ -45,9 +45,9 @@ resilience4j:
   ratelimiter:
     configs:
       default:
-        limit-for-period: 1
+        limit-for-period: 10
         limit-refresh-period:
-          seconds: 60
+          seconds: 300
         timeout-duration:
           seconds: 0
         register-health-indicator: true
@@ -56,6 +56,9 @@ resilience4j:
         base-config: default
 
 kafka:
+  header:
+    source: 'weather-data-service'
+    version: '1.0'
   data:
     topic:
       raw: data-raw

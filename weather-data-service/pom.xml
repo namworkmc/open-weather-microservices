@@ -77,7 +77,6 @@
 							<output>${project.build.directory}/generated-sources</output>
 							<modelPackage>org.sideprj.weatherdataservice.feign.client.openweather</modelPackage>
 
-							<!-- Generate only models, no APIs -->
 							<generateModels>true</generateModels>
 							<generateApis>false</generateApis>
 							<generateApiTests>false</generateApiTests>
@@ -86,17 +85,12 @@
 							<generateModelDocumentation>false</generateModelDocumentation>
 							<generateSupportingFiles>false</generateSupportingFiles>
 
-							<!-- Explicitly skip files that might reference ApiClient -->
-							<skipOverwrite>false</skipOverwrite>
-
-							<!-- Additional options to exclude schema annotations -->
 							<configOptions>
 								<useSpringBoot3>true</useSpringBoot3>
 								<openApiNullable>false</openApiNullable>
 								<hideGenerationTimestamp>true</hideGenerationTimestamp>
 								<useTags>false</useTags>
 								<useOptional>true</useOptional>
-								<library>spring-cloud</library>
 								<documentationProvider>none</documentationProvider>
 							</configOptions>
 						</configuration>
