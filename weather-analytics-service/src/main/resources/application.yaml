@@ -32,6 +32,9 @@ spring:
       authentication-database: admin
 
 kafka:
+  header:
+    source: 'weather-analytics-service'
+    version: '1.0'
   internal:
       topic:
         hot: internal-hot-weather
@@ -41,3 +44,9 @@ kafka:
   notification:
     topic:
       hot_weather: notification-hot-weather
+
+weather:
+  hot-temperature: 25
+  hot-humidity: 20
+
+debug: true

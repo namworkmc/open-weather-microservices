@@ -1,16 +1,14 @@
-package org.sideprj.weatherdataservice.service.impl;
+package org.sideprj.weatherdataservice.service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.sideprj.weatherdataservice.feign.client.openweather.Model200;
 import org.sideprj.weatherdataservice.feign.client.openweather.OpenWeatherService;
-import org.sideprj.weatherdataservice.kafka.producer.impl.WeatherProducer;
+import org.sideprj.weatherdataservice.kafka.producer.DataRawKafkaProducer;
 import org.sideprj.weatherdataservice.kafka.util.mapper.WeatherMapper;
-import org.sideprj.weatherdataservice.service.WeatherSchedulerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WeatherSchedulerImpl implements WeatherSchedulerService {
+public class WeatherScheduler {
 
     public static final int MIN_VALID_TEMP = -100;
     public static final int MAX_VALID_TEMP = 70;
@@ -35,29 +33,27 @@ public class WeatherSchedulerImpl implements WeatherSchedulerService {
 
     private final OpenWeatherService openWeatherService;
 
-    private final WeatherProducer weatherProducer;
+    private final DataRawKafkaProducer dataRawProducer;
 
-    @Override
-    @Scheduled(cron = "${scheduler.weather.cron}")
+    @Scheduled(cron = "${scheduler.weather.cron:-}")
     public void sendWeatherUpdate() {
         supportedCities
                 .parallelStream()
                 .map(city -> {
                     try {
-                        return Pair.of(city, openWeatherService.getWeatherByCity(city));
+                        return openWeatherService.getWeatherByCity(city);
                     } catch (Exception e) {
                         log.error("Failed to get weather data from OpenWeather API: {}", city, e);
                         return null;
                     }
                 })
                 .filter(Objects::nonNull)
-                .forEach(pair -> {
-                    var key = pair.getKey();
-                    var weatherRes = pair.getValue();
+                .forEach(weatherRes -> {
+                    var key = weatherRes.getSys().getCountry();
                     if (isWeatherValid(weatherRes)) {
-                        weatherProducer.produce(key, weatherMapper.toWeatherEvent(weatherRes));
+                        dataRawProducer.send(key, weatherMapper.toWeatherEvent(weatherRes));
                     } else {
-                        weatherProducer.produceDlq(key, weatherMapper.toWeatherEvent(weatherRes));
+                        dataRawProducer.sendDlq(key, weatherMapper.toWeatherEvent(weatherRes));
                     }
                 });
     }

@@ -6,6 +6,8 @@ import org.sideprj.weatherdataservice.feign.client.openweather.OpenWeatherServic
 import org.springframework.stereotype.Component;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +20,8 @@ public class OpenWeatherServiceImpl implements OpenWeatherService {
 
     @Override
     @CircuitBreaker(name = "openWeatherApiClient")
+    @RateLimiter(name = "openWeatherApiClient")
+    @Retry(name = "openWeatherApiClient")
     public Model200 getWeatherByCity(String city) {
         return openWeatherApiClient.getWeatherByCity(city);
     }
