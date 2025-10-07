@@ -4,6 +4,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:9094
     producer:
+      transaction-id-prefix: kafka-tx-id-
       acks: all
       retries: 3
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -49,4 +50,6 @@ weather:
   hot-temperature: 25
   hot-humidity: 20
 
-debug: true
+outbox:
+  processor:
+    cron: "0 */5 * * * *"

@@ -23,8 +23,6 @@ spring:
     listener:
       ack-mode: record
 
-debug: true
-
 kafka:
   notification:
     topic:

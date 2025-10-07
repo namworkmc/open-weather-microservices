@@ -1,4 +1,4 @@
-package org.sideprj.weatheranalyticsservice.entity;
+package org.sideprj.weatheranalyticsservice.model.entity;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -6,9 +6,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
-@Document(collection = "hot_weather_alerts")
+@Document(collection = "weather_events")
 @Data
-public class HotWeatherAlertEntity extends AbstractDocument {
+public class WeatherEventEntity extends AbstractDocument {
 
     private String city;
 
@@ -18,5 +18,5 @@ public class HotWeatherAlertEntity extends AbstractDocument {
 
     private double tempMax;
 
-    private String reason;
+    private String unit;  // e.g., "K" for Kelvin
 }

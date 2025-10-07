@@ -30,6 +30,11 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9094
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_METADATA_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: 60000
       KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS: 40000
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
@@ -45,7 +50,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 10
-      start_period: 60s
+      start_period: 30s
 
   schema-registry:
     container_name: schema-registry
@@ -73,8 +78,6 @@ services:
       start_period: 30s
 
   control-center:
-    profiles:
-      - dev
     container_name: control-center
     image: confluentinc/cp-enterprise-control-center:7.5.0
     networks:
@@ -94,18 +97,56 @@ services:
         condition: service_healthy
       schema-registry:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9021" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
-  mongodb:
-    container_name: mongodb
-    image: mongo:8.0
+  mongodb-primary:
+    image: bitnamisecure/mongodb:mine
+    container_name: mongodb-primary
+    networks:
+      - mongo-network
+    user: root
+    volumes:
+      - mongodb-primary:/bitnami
+    environment:
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_NAME=openWeatherReplica
+      - MONGODB_REPLICA_SET_KEY=123456789
+      - MONGODB_ROOT_USER=openweather
+      - MONGODB_ROOT_PASSWORD=openweather
+      - MONGODB_USERNAME=openweather
+      - MONGODB_PASSWORD=openweather
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: openweather
-      MONGO_INITDB_ROOT_PASSWORD: openweather
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.runCommand('ping').ok", "--quiet" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+  mongodb-secondary:
+    image: bitnamisecure/mongodb:mine
+    container_name: mongodb-secondary
+    networks:
+      - mongo-network
+    depends_on:
+      mongodb-primary:
+        condition: service_healthy
     volumes:
-      - mongodb-data:/data/db
-      - mongodb-config:/data/configdb
+      - mongodb-secondary:/bitnami
+    environment:
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_REPLICA_SET_NAME=openWeatherReplica
+      - MONGODB_REPLICA_SET_KEY=123456789
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_INITIAL_PRIMARY_ROOT_USER=openweather
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=openweather
+      - MONGODB_SET_SECONDARY_OK=yes
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.runCommand('ping').ok", "--quiet" ]
       interval: 10s
@@ -116,6 +157,8 @@ services:
 networks:
   kafka-network:
     driver: bridge
+  mongo-network:
+    driver: bridge
 
 volumes:
   zookeeper-data:
@@ -123,3 +166,5 @@ volumes:
   kafka-data:
   mongodb-data:
   mongodb-config:
+  mongodb-primary:
+  mongodb-secondary:

@@ -1,5 +1,24 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="WeatherAnalyticsService" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.level.org.springframework.transaction" />
+        <option name="value" value="trace" />
+      </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.level.org.springframework.kafka.transaction" />
+        <option name="value" value="debug" />
+      </param>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="logging.level.org.springframework.data.mongodb.core.MongoTemplate" />
+        <option name="value" value="debug" />
+      </param>
+    </additionalParameters>
+    <option name="DEBUG_MODE" value="true" />
+    <option name="SCHEDULED_DEBUGGER" value="true" />
     <module name="weather-analytics-service" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.sideprj.weatheranalyticsservice.WeatherAnalyticsService" />
     <method v="2">
