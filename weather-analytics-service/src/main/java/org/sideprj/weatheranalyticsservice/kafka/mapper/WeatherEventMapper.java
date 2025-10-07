@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.sideprj.openweathermicroservices.avro.WeatherEvent;
-import org.sideprj.weatheranalyticsservice.entity.WeatherEventEntity;
+import org.sideprj.weatheranalyticsservice.model.entity.WeatherEventEntity;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface WeatherEventMapper {

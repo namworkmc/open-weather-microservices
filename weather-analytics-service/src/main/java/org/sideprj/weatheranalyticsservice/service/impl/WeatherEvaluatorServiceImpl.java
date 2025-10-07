@@ -1,7 +1,7 @@
 package org.sideprj.weatheranalyticsservice.service.impl;
 
-import org.sideprj.weatheranalyticsservice.entity.HotWeatherAlertEntity;
-import org.sideprj.weatheranalyticsservice.entity.WeatherEventEntity;
+import org.sideprj.weatheranalyticsservice.model.entity.HotWeatherAlertEntity;
+import org.sideprj.weatheranalyticsservice.model.entity.WeatherEventEntity;
 import org.sideprj.weatheranalyticsservice.repository.HotWeatherAlertRepository;
 import org.sideprj.weatheranalyticsservice.repository.WeatherEventRepository;
 import org.sideprj.weatheranalyticsservice.service.WeatherEvaluatorService;

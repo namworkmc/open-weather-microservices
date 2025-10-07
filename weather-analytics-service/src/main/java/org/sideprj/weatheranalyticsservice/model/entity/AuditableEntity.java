@@ -1,4 +1,4 @@
-package org.sideprj.weatheranalyticsservice.entity;
+package org.sideprj.weatheranalyticsservice.model.entity;
 
 import java.time.LocalDateTime;
 
