@@ -1,4 +1,4 @@
-package org.sideprj.weatheranalyticsservice.model.entity;
+package org.sideprj.weathercommons.model.entity;
 
 import java.util.Objects;
 

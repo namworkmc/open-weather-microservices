@@ -36,15 +36,16 @@ kafka:
   header:
     source: 'weather-analytics-service'
     version: '1.0'
-  internal:
-      topic:
-        hot: internal-hot-weather
   data:
     topic:
       raw: data-raw
   notification:
     topic:
       hot_weather: notification-hot-weather
+      ignore: notification-ignore
+  alert:
+    topic:
+      hot_weather: alert-hot-weather
 
 weather:
   hot-temperature: 25

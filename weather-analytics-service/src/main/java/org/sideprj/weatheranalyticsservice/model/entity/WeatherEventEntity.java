@@ -1,5 +1,6 @@
 package org.sideprj.weatheranalyticsservice.model.entity;
 
+import org.sideprj.weathercommons.model.entity.AbstractDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;

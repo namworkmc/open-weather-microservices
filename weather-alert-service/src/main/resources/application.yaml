@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: weather-alert-service
+
+kafka:
+  alert:
+    topic:
+      hot_weather: alert-hot-weather

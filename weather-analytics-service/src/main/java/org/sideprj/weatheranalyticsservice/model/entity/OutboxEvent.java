@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.sideprj.weatheranalyticsservice.model.enums.OutboxStatusEnum;
+import org.sideprj.weathercommons.model.entity.AbstractDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;

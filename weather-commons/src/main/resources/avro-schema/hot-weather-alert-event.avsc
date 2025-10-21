@@ -4,34 +4,60 @@
   "namespace": "org.sideprj.openweathermicroservices.avro",
   "fields": [
     {
+      "name": "alertId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
       "name": "city",
-      "type": "string",
-      "doc": "City name"
+      "type": "string"
     },
     {
       "name": "country",
-      "type": "string",
-      "doc": "Country name"
+      "type": "string"
     },
     {
       "name": "timestamp",
-      "type": "long",
-      "doc": "Unix timestamp in milliseconds"
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
     },
     {
       "name": "temperature",
-      "type": "double",
-      "doc": "Current temperature in Celsius"
+      "type": "double"
     },
     {
-      "name": "tempMin",
-      "type": "double",
-      "doc": "Minimum temperature in Celsius"
+      "name": "humidity",
+      "type": "double"
     },
     {
-      "name": "tempMax",
-      "type": "double",
-      "doc": "Maximum temperature in Celsius"
+      "name": "severity",
+      "type": {
+        "type": "enum",
+        "symbols": [
+          "MEDIUM",
+          "HIGH"
+        ],
+        "name": "SeverityEnum"
+      }
+    },
+    {
+      "name": "reasons",
+      "type": {
+        "type": "array",
+        "default": [],
+        "items": {
+          "type": "enum",
+          "symbols": [
+            "HOT",
+            "DRY"
+          ],
+          "name": "ReasonEnum"
+        }
+      }
     }
   ]
-} 
+}
