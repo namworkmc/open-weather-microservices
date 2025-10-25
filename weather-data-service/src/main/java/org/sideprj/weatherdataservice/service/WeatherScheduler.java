@@ -1,14 +1,17 @@
 package org.sideprj.weatherdataservice.service;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-import org.sideprj.weatherdataservice.feign.client.openweather.Model200;
+import org.apache.commons.lang3.tuple.Pair;
+import org.sideprj.openweathermicroservices.avro.DataQuality;
+import org.sideprj.openweathermicroservices.avro.WeatherEvent;
 import org.sideprj.weatherdataservice.feign.client.openweather.OpenWeatherService;
 import org.sideprj.weatherdataservice.kafka.producer.DataRawKafkaProducer;
-import org.sideprj.weatherdataservice.kafka.util.mapper.WeatherMapper;
+import org.sideprj.weatherdataservice.util.DataServiceDateUtil;
+import org.sideprj.weatherdataservice.util.mapper.WeatherMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WeatherScheduler {
 
-    public static final int MIN_VALID_TEMP = -100;
-    public static final int MAX_VALID_TEMP = 70;
-    public static final int MIN_VALID_HUMIDITY = 0;
-    public static final int MAX_VALID_HUMIDITY = 100;
+    private static final Pair<Integer, Integer> MIN_MAX_TEMP = Pair.of(-50, 60);
+    private static final Pair<Integer, Integer> MIN_MAX_HUMIDITY = Pair.of(0, 100);
+    private static final Pair<Integer, Integer> MIN_MAX_WIND_SPEED = Pair.of(0, 400);
+    private static final Pair<Integer, Integer> MIN_MAX_PRESSURE = Pair.of(870, 1085);
+    private static final int TIMESTAMP_HOUR_FRESHNESS = 1;
 
     @Value("#{'${openweather.supported-cities}'.trim().split(',')}")
     private List<String> supportedCities;
@@ -34,6 +38,8 @@ public class WeatherScheduler {
     private final OpenWeatherService openWeatherService;
 
     private final DataRawKafkaProducer dataRawProducer;
+
+    private final CacheService cacheService;
 
     @Scheduled(cron = "${scheduler.weather.cron:-}")
     public void sendWeatherUpdate() {
@@ -48,20 +54,52 @@ public class WeatherScheduler {
                     }
                 })
                 .filter(Objects::nonNull)
-                .forEach(weatherRes -> {
-                    var key = weatherRes.getSys().getCountry();
-                    if (isWeatherValid(weatherRes)) {
-                        dataRawProducer.send(key, weatherMapper.toWeatherEvent(weatherRes));
-                    } else {
-                        dataRawProducer.sendDlq(key, weatherMapper.toWeatherEvent(weatherRes));
+                .filter(weatherRes -> {
+                    boolean isNotCache = cacheService.getLastFetchedTime(weatherRes.getName()).isEmpty();
+                    log.info("Weather data: {} was not cached {}", weatherRes.getName(), isNotCache);
+                    return isNotCache;
+                })
+                .map(weatherRes -> weatherMapper.toWeatherEvent(weatherRes, LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+                .forEach(weatherEvent -> {
+                    var key = weatherEvent.getCity();
+                    cacheService.putLastFetchedTime(key, DataServiceDateUtil.toLocalDateTime(weatherEvent.getTimestamp()));
+
+                    if (isWeatherTimestampInvalid(weatherEvent)) {
+                        weatherEvent.setDataQuality(DataQuality.INVALID);
+                        dataRawProducer.sendDlq(key, weatherEvent);
+                        return;
+                    } else if (isWeatherDataOutOfRange(weatherEvent)) {
+                        weatherEvent.setDataQuality(DataQuality.OUT_OF_RANGE);
+                        dataRawProducer.sendDlq(key, weatherEvent);
+                        return;
                     }
+
+                    weatherEvent.setDataQuality(DataQuality.VALID);
+                    dataRawProducer.send(key, weatherEvent);
                 });
     }
 
-    private static boolean isWeatherValid(Model200 weatherRes) {
-        return BigDecimal.valueOf(MIN_VALID_TEMP).compareTo(weatherRes.getMain().getTemp()) <= 0
-                && BigDecimal.valueOf(MAX_VALID_TEMP).compareTo(weatherRes.getMain().getTemp()) >= 0
-                && weatherRes.getMain().getHumidity() >= MIN_VALID_HUMIDITY && weatherRes.getMain().getHumidity() <= MAX_VALID_HUMIDITY
-                && !StringUtils.isEmpty(weatherRes.getName());
+    private static boolean isWeatherTimestampInvalid(WeatherEvent weatherEvent) {
+        var timestampLocalDateTime = LocalDateTime.ofInstant(weatherEvent.getTimestamp(), ZoneId.systemDefault());
+        return DataServiceDateUtil.isEqualOrAfter(timestampLocalDateTime, getOneHourAgo())
+                && DataServiceDateUtil.isEqualOrAfter(
+                DataServiceDateUtil.toLocalDateTime(weatherEvent.getFetchedAt()),
+                timestampLocalDateTime
+        );
+    }
+
+    private static boolean isWeatherDataOutOfRange(WeatherEvent weatherEvent) {
+        return isBetween((int) weatherEvent.getTemperature(), MIN_MAX_TEMP)
+                && isBetween((int) weatherEvent.getHumidity(), MIN_MAX_HUMIDITY)
+                && isBetween((int) weatherEvent.getWindSpeed(), MIN_MAX_WIND_SPEED)
+                && isBetween((int) weatherEvent.getPressure(), MIN_MAX_PRESSURE);
+    }
+
+    private static LocalDateTime getOneHourAgo() {
+        return LocalDateTime.now().minusHours(TIMESTAMP_HOUR_FRESHNESS);
+    }
+
+    private static boolean isBetween(int value, Pair<Integer, Integer> range) {
+        return range.getLeft() <= value && value <= range.getRight();
     }
 }

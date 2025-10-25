@@ -1,5 +1,12 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="WeatherDataService" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="openweather.api.key" />
+        <option name="value" value="d8cd50b29b80d2f47dbed0bd9cc6872c" />
+      </param>
+    </additionalParameters>
     <option name="SCHEDULED_DEBUGGER" value="true" />
     <module name="weather-data-service" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.sideprj.weatherdataservice.WeatherDataService" />

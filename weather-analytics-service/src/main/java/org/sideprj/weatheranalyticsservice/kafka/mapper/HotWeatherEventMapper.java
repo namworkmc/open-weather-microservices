@@ -19,11 +19,13 @@ import org.sideprj.openweathermicroservices.avro.WeatherEvent;
 )
 public interface HotWeatherEventMapper {
 
+    @Mapping(target = "severity", ignore = true)
+    @Mapping(target = "reasons", ignore = true)
     @Mapping(target = "alertId", expression = "java(UUID.randomUUID())")
     @Mapping(target = "timestamp", expression = "java(Instant.now())")
-    @Mapping(target = "temperature", source = "temp")
-    @Mapping(target = "severity", source = "temp", qualifiedByName = "mapSeverity")
-    @Mapping(target = "reasons", source = "temp", qualifiedByName = "mapReasons")
+//    @Mapping(target = "temperature", source = "temp")
+//    @Mapping(target = "severity", source = "temp", qualifiedByName = "mapSeverity")
+//    @Mapping(target = "reasons", source = "temp", qualifiedByName = "mapReasons")
     HotWeatherAlertEvent toHotWeatherAlertEvent(WeatherEvent weatherEvent);
 
     @Named("mapSeverity")

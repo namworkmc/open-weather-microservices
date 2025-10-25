@@ -1,6 +1,8 @@
 spring:
   application:
     name: weather-data-service
+  cache:
+    type: simple
   kafka:
     bootstrap-servers: localhost:9094
     properties:
@@ -70,4 +72,4 @@ openweather:
 
 scheduler:
   weather:
-    cron: "0 */5 * * * *"
+    cron: "0 */10 * * * *"

@@ -1,0 +1,80 @@
+{
+  "type": "record",
+  "name": "WeatherEvent",
+  "namespace": "org.sideprj.openweathermicroservices.avro",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "city",
+      "type": "string"
+    },
+    {
+      "name": "country",
+      "type": "string"
+    },
+    {
+      "name": "temperature",
+      "type": "double"
+    },
+    {
+      "name": "humidity",
+      "type": "double"
+    },
+    {
+      "name": "windSpeed",
+      "type": "double"
+    },
+    {
+      "name": "pressure",
+      "type": "double"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "fetchedAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "source",
+      "type": "string"
+    },
+    {
+      "name": "correlationId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "dataQuality",
+      "default": null,
+      "type": [
+        "null",
+        {
+          "type": "enum",
+          "name": "DataQuality",
+          "symbols": [
+            "VALID",
+            "INVALID",
+            "DUPLICATE",
+            "OUT_OF_RANGE"
+          ]
+        }
+      ]
+    }
+  ]
+}
