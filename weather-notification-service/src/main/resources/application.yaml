@@ -4,11 +4,6 @@ spring:
   data:
     mongodb:
       database: weather-notification
-      host: localhost
-      port: 27017
-      username: openweather
-      password: openweather
-      authentication-database: admin
   kafka:
     bootstrap-servers: localhost:9094
     consumer:

@@ -12,11 +12,6 @@
     <artifactId>weather-commons</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
-
         <!-- AVRO Schema Registry and Serializer Dependencies -->
         <dependency>
             <groupId>io.confluent</groupId>

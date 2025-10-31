@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.sideprj.weatheranalyticsservice.model.enums.OutboxStatusEnum;
-import org.sideprj.weathercommons.model.entity.AbstractDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
@@ -13,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @Document(collection = "outbox")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class OutboxEvent extends AbstractDocument {
+public class OutboxEventEntity extends AbstractDocumentEntity {
 
     private OutboxStatusEnum status;
 
@@ -23,14 +22,11 @@ public class OutboxEvent extends AbstractDocument {
 
     private Map<String, Object> headers = new HashMap<>();
 
-    private Object message = new HashMap<>();
+    private Object message;
 
-    public OutboxEvent() {
-    }
-
-    public OutboxEvent(Object message) {
+    public OutboxEventEntity(Object message) {
         this.message = message;
-        this.status = OutboxStatusEnum.NEW;
+        status = OutboxStatusEnum.NEW;
     }
 
     public void putHeader(String key, Object value) {

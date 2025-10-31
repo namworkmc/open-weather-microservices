@@ -1,6 +1,5 @@
 package org.sideprj.weathernotificationservice.entity;
 
-import org.sideprj.weathercommons.model.entity.AbstractDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;

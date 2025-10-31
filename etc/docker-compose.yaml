@@ -85,56 +85,6 @@ services:
       retries: 5
       start_period: 60s
 
-  mongodb-primary:
-    image: bitnamisecure/mongodb:mine
-    container_name: mongodb-primary
-    networks:
-      - mongo-network
-    user: root
-    volumes:
-      - mongodb-primary:/bitnami
-    environment:
-      - MONGODB_REPLICA_SET_MODE=primary
-      - MONGODB_REPLICA_SET_NAME=openWeatherReplica
-      - MONGODB_REPLICA_SET_KEY=123456789
-      - MONGODB_ROOT_USER=openweather
-      - MONGODB_ROOT_PASSWORD=openweather
-      - MONGODB_USERNAME=openweather
-      - MONGODB_PASSWORD=openweather
-    ports:
-      - "27017:27017"
-    healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.runCommand('ping').ok", "--quiet" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-  mongodb-secondary:
-    image: bitnamisecure/mongodb:mine
-    container_name: mongodb-secondary
-    networks:
-      - mongo-network
-    depends_on:
-      mongodb-primary:
-        condition: service_healthy
-    volumes:
-      - mongodb-secondary:/bitnami
-    environment:
-      - MONGODB_REPLICA_SET_MODE=secondary
-      - MONGODB_REPLICA_SET_NAME=openWeatherReplica
-      - MONGODB_REPLICA_SET_KEY=123456789
-      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
-      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
-      - MONGODB_INITIAL_PRIMARY_ROOT_USER=openweather
-      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=openweather
-      - MONGODB_SET_SECONDARY_OK=yes
-    healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.runCommand('ping').ok", "--quiet" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
 networks:
   kafka-network:
     driver: bridge
@@ -143,5 +93,3 @@ networks:
 
 volumes:
   kafka-data:
-  mongodb-primary:
-  mongodb-secondary:

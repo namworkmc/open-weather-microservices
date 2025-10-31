@@ -26,11 +26,7 @@ spring:
   data:
     mongodb:
       database: weather-analytics
-      host: localhost
-      port: 27017
-      username: openweather
-      password: openweather
-      authentication-database: admin
+      auto-index-creation: true
 
 kafka:
   header:
@@ -48,8 +44,20 @@ kafka:
       hot_weather: alert-hot-weather
 
 weather:
-  hot-temperature: 25
-  hot-humidity: 20
+  heat-index-alert: 40
+  dew-point-alert: 25
+  temp-deviation-alert: 5
+  rules:
+    - region: "Bangkok"
+      temperatureThreshold: 36
+      humidityThreshold: 30
+    - region: "Hanoi"
+      temperatureThreshold: 34
+      humidityThreshold: 25
+    - region: "Tokyo"
+      temperatureThreshold: 37
+      humidityThreshold: 40
+      pressureThreshold: 900
 
 outbox:
   processor:

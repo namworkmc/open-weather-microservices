@@ -19,13 +19,6 @@
       "type": "string"
     },
     {
-      "name": "timestamp",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
-    },
-    {
       "name": "temperature",
       "type": "double"
     },
@@ -34,30 +27,80 @@
       "type": "double"
     },
     {
+      "name": "windSpeed",
+      "type": "double"
+    },
+    {
+      "name": "pressure",
+      "type": "double"
+    },
+    {
+      "name": "heatIndex",
+      "type": "double"
+    },
+    {
+      "name": "dewPoint",
+      "type": "double"
+    },
+    {
+      "name": "temperatureDeviation",
+      "type": "double"
+    },
+    {
+      "name": "ruleId",
+      "type": "string"
+    },
+    {
+      "name": "ruleDescription",
+      "type": "string"
+    },
+    {
       "name": "severity",
       "type": {
         "type": "enum",
+        "name": "AlertSeverity",
         "symbols": [
-          "MEDIUM",
-          "HIGH"
-        ],
-        "name": "SeverityEnum"
+          "INFO",
+          "WARNING",
+          "CRITICAL"
+        ]
       }
     },
     {
-      "name": "reasons",
+      "name": "detectedAt",
       "type": {
-        "type": "array",
-        "default": [],
-        "items": {
-          "type": "enum",
-          "symbols": [
-            "HOT",
-            "DRY"
-          ],
-          "name": "ReasonEnum"
-        }
+        "type": "long",
+        "logicalType": "timestamp-millis"
       }
+    },
+    {
+      "name": "sourceEventId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "correlationId",
+      "type": "string"
+    },
+    {
+      "name": "dataQuality",
+      "type": {
+        "type": "enum",
+        "name": "DataQuality",
+        "symbols": [
+          "VALID",
+          "INVALID",
+          "DUPLICATE",
+          "OUT_OF_RANGE"
+        ]
+      }
+    },
+    {
+      "name": "source",
+      "type": "string",
+      "default": "WeatherAnalyticsService"
     }
   ]
 }

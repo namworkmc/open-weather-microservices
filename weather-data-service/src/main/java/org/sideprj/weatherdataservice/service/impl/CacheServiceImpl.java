@@ -19,7 +19,7 @@ public class CacheServiceImpl implements CacheService {
     @Override
     @Cacheable(value = WEATHER_FETCHED_AT_CACHE, key = "'weather:lastFetched:' + #city")
     public Optional<LocalDateTime> getLastFetchedTime(String city) {
-        // Empty of putLastFetchedTime has never been called
+        // Empty because of putLastFetchedTime has never been called
         return Optional.empty();
     }
 

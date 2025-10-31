@@ -3,7 +3,7 @@ package org.sideprj.weatheranalyticsservice.service.impl;
 import java.util.List;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.sideprj.weatheranalyticsservice.model.entity.OutboxEvent;
+import org.sideprj.weatheranalyticsservice.model.entity.OutboxEventEntity;
 import org.sideprj.weatheranalyticsservice.model.enums.OutboxStatusEnum;
 import org.sideprj.weatheranalyticsservice.repository.OutboxRepository;
 import org.sideprj.weatheranalyticsservice.service.OutboxService;
@@ -31,7 +31,7 @@ public class OutboxServiceImpl implements OutboxService {
 
     @Override
     public void createOutboxMessage(String source, Object key, Object message) {
-        OutboxEvent outbox = new OutboxEvent(message);
+        OutboxEventEntity outbox = new OutboxEventEntity(message);
         outbox.setSource(source);
         outbox.setKey(key);
         outbox.putHeader("source", source);
@@ -41,7 +41,7 @@ public class OutboxServiceImpl implements OutboxService {
 
     @Override
     public void sendOutboxEvents() {
-        List<OutboxEvent> outboxes = outboxRepository.findAllByStatusOrderByCreatedAtAsc(OutboxStatusEnum.NEW);
+        List<OutboxEventEntity> outboxes = outboxRepository.findAllByStatusOrderByCreatedAtAsc(OutboxStatusEnum.NEW);
         outboxes.forEach(outbox -> outbox.setStatus(OutboxStatusEnum.SENT));
         outboxRepository.saveAll(outboxes);
 

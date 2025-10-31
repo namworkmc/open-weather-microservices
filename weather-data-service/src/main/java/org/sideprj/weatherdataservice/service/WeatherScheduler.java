@@ -44,7 +44,7 @@ public class WeatherScheduler {
     @Scheduled(cron = "${scheduler.weather.cron:-}")
     public void sendWeatherUpdate() {
         supportedCities
-                .parallelStream()
+                .stream()
                 .map(city -> {
                     try {
                         return openWeatherService.getWeatherByCity(city);
@@ -54,13 +54,10 @@ public class WeatherScheduler {
                     }
                 })
                 .filter(Objects::nonNull)
-                .filter(weatherRes -> {
-                    boolean isNotCache = cacheService.getLastFetchedTime(weatherRes.getName()).isEmpty();
-                    log.info("Weather data: {} was not cached {}", weatherRes.getName(), isNotCache);
-                    return isNotCache;
-                })
+                .filter(weatherRes -> cacheService.getLastFetchedTime(weatherRes.getName()).isEmpty())
                 .map(weatherRes -> weatherMapper.toWeatherEvent(weatherRes, LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
                 .forEach(weatherEvent -> {
+                    log.info("Sending weather event: {}", weatherEvent);
                     var key = weatherEvent.getCity();
                     cacheService.putLastFetchedTime(key, DataServiceDateUtil.toLocalDateTime(weatherEvent.getTimestamp()));
 
