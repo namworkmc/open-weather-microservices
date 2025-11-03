@@ -3,6 +3,9 @@ spring:
     name: weather-analytics-service
   kafka:
     bootstrap-servers: localhost:9094
+    properties:
+      schema.registry.url: http://localhost:8081
+      specific.avro.reader: true
     producer:
       transaction-id-prefix: kafka-tx-id-
       acks: all
@@ -11,18 +14,24 @@ spring:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       properties:
         enable.idempotence: true
-        schema.registry.url: http://localhost:8081
         auto.register.schemas: true
         use.latest.version: true
     consumer:
       group-id: analytics-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-      properties:
-        schema.registry.url: http://localhost:8081
-        specific.avro.reader: true
     listener:
       ack-mode: record
+    streams:
+      properties:
+        default:
+          key:
+            serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+          value:
+            serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+          deserialization:
+            exception:
+              handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
   data:
     mongodb:
       database: weather-analytics
@@ -47,17 +56,6 @@ weather:
   heat-index-alert: 40
   dew-point-alert: 25
   temp-deviation-alert: 5
-  rules:
-    - region: "Bangkok"
-      temperatureThreshold: 36
-      humidityThreshold: 30
-    - region: "Hanoi"
-      temperatureThreshold: 34
-      humidityThreshold: 25
-    - region: "Tokyo"
-      temperatureThreshold: 37
-      humidityThreshold: 40
-      pressureThreshold: 900
 
 outbox:
   processor:

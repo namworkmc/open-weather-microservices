@@ -23,24 +23,14 @@ public class WeatherRuleServiceImpl implements WeatherRuleSetService {
     @Override
     public boolean isValid(WeatherEvent weatherEvent) {
         Optional<WeatherRuleSetEntity> ruleOpt = findRuleSetForRegion(weatherEvent.getCity());
-        if (ruleOpt.isEmpty()) {
-            return false;
-        }
-
-        WeatherRuleSetEntity weatherRule = ruleOpt.get();
-        boolean ok = weatherRule.getTemperatureThreshold() == null ||
-                weatherEvent.getTemperature() > weatherRule.getTemperatureThreshold();
-
-        ok &= weatherRule.getHumidityThreshold() == null ||
-                weatherEvent.getHumidity() < weatherRule.getHumidityThreshold();
-
-        ok &= weatherRule.getWindSpeedThreshold() == null ||
-                weatherEvent.getWindSpeed() > weatherRule.getWindSpeedThreshold();
-
-        ok &= weatherRule.getPressureThreshold() == null ||
-                weatherEvent.getPressure() < weatherRule.getPressureThreshold();
-
-        return ok;
+        return ruleOpt
+                .map(rule ->
+                        (rule.getTemperatureThreshold() == null || weatherEvent.getTemperature() > rule.getTemperatureThreshold())
+                                && (rule.getHumidityThreshold() == null || weatherEvent.getHumidity() < rule.getHumidityThreshold())
+                                && (rule.getWindSpeedThreshold() == null || weatherEvent.getWindSpeed() > rule.getWindSpeedThreshold())
+                                && (rule.getPressureThreshold() == null || weatherEvent.getPressure() < rule.getPressureThreshold())
+                )
+                .orElse(true);
     }
 
     @Override

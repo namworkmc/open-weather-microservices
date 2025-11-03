@@ -61,12 +61,14 @@ public class WeatherScheduler {
                     var key = weatherEvent.getCity();
                     cacheService.putLastFetchedTime(key, DataServiceDateUtil.toLocalDateTime(weatherEvent.getTimestamp()));
 
-                    if (isWeatherTimestampInvalid(weatherEvent)) {
+                    if (isWeatherTimestampValid(weatherEvent)) {
+                        if (!isWeatherDataInRange(weatherEvent)) {
+                            weatherEvent.setDataQuality(DataQuality.OUT_OF_RANGE);
+                            dataRawProducer.sendDlq(key, weatherEvent);
+                            return;
+                        }
+                    } else {
                         weatherEvent.setDataQuality(DataQuality.INVALID);
-                        dataRawProducer.sendDlq(key, weatherEvent);
-                        return;
-                    } else if (isWeatherDataOutOfRange(weatherEvent)) {
-                        weatherEvent.setDataQuality(DataQuality.OUT_OF_RANGE);
                         dataRawProducer.sendDlq(key, weatherEvent);
                         return;
                     }
@@ -76,7 +78,7 @@ public class WeatherScheduler {
                 });
     }
 
-    private static boolean isWeatherTimestampInvalid(WeatherEvent weatherEvent) {
+    private static boolean isWeatherTimestampValid(WeatherEvent weatherEvent) {
         var timestampLocalDateTime = LocalDateTime.ofInstant(weatherEvent.getTimestamp(), ZoneId.systemDefault());
         return DataServiceDateUtil.isEqualOrAfter(timestampLocalDateTime, getOneHourAgo())
                 && DataServiceDateUtil.isEqualOrAfter(
@@ -85,7 +87,7 @@ public class WeatherScheduler {
         );
     }
 
-    private static boolean isWeatherDataOutOfRange(WeatherEvent weatherEvent) {
+    private static boolean isWeatherDataInRange(WeatherEvent weatherEvent) {
         return isBetween((int) weatherEvent.getTemperature(), MIN_MAX_TEMP)
                 && isBetween((int) weatherEvent.getHumidity(), MIN_MAX_HUMIDITY)
                 && isBetween((int) weatherEvent.getWindSpeed(), MIN_MAX_WIND_SPEED)

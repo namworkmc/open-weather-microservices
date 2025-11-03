@@ -3,7 +3,6 @@ package org.sideprj.weatheranalyticsservice.mapper;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -16,7 +15,6 @@ import org.sideprj.openweathermicroservices.avro.WeatherEvent;
         componentModel = MappingConstants.ComponentModel.SPRING,
         imports = {UUID.class, Instant.class}
 )
-@DecoratedWith(HotWeatherEventMapperDecorator.class)
 public interface HotWeatherEventMapper {
 
     @Mapping(target = "temperatureDeviation", ignore = true)
