@@ -1,0 +1,97 @@
+{
+  "type": "record",
+  "name": "WeatherAlertEvent",
+  "namespace": "org.sideprj.openweathermicroservices.avro",
+  "fields": [
+    {
+      "name": "alertId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "city",
+      "type": "string"
+    },
+    {
+      "name": "country",
+      "type": "string"
+    },
+    {
+      "name": "severity",
+      "default": null,
+      "type": [
+        "null",
+        {
+          "type": "enum",
+          "name": "Severity",
+          "symbols": [
+            "LOW",
+            "MODERATE",
+            "HIGH",
+            "EXTREME"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "reason",
+      "default": null,
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "name": "metrics",
+      "type": {
+        "type": "record",
+        "name": "WeatherMetrics",
+        "fields": [
+          {
+            "name": "temperature",
+            "type": "double"
+          },
+          {
+            "name": "humidity",
+            "type": "double"
+          },
+          {
+            "name": "heatIndex",
+            "type": "double"
+          },
+          {
+            "name": "dewPoint",
+            "type": "double"
+          },
+          {
+            "name": "temperatureDeviation",
+            "type": "double"
+          }
+        ]
+      }
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "correlationId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "sourceEventId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 package org.sideprj.weatheralertservice.kafka.consumer;
 
-import org.sideprj.openweathermicroservices.avro.HotWeatherAlertEvent;
+import org.sideprj.openweathermicroservices.avro.WeatherAlertEvent;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class AlertConsumer {
 
     @RetryableTopic
     @KafkaListener(topics = "${kafka.alert.topic.hot_weather}")
-    public void consumeAlert(HotWeatherAlertEvent event) {
+    public void consumeAlert(WeatherAlertEvent event) {
         log.debug("Received message: {}", event);
     }
 }

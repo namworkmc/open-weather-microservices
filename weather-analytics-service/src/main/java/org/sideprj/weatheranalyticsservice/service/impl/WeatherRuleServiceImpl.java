@@ -1,12 +1,12 @@
 package org.sideprj.weatheranalyticsservice.service.impl;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.sideprj.openweathermicroservices.avro.WeatherEvent;
 import org.sideprj.weatheranalyticsservice.model.entity.WeatherRuleSetEntity;
 import org.sideprj.weatheranalyticsservice.repository.WeatherRuleSetRepository;
+import org.sideprj.weatheranalyticsservice.service.AnalyticsCacheService;
 import org.sideprj.weatheranalyticsservice.service.WeatherRuleSetService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +20,11 @@ public class WeatherRuleServiceImpl implements WeatherRuleSetService {
 
     private final WeatherRuleSetRepository weatherRuleSetRepository;
 
+    private final AnalyticsCacheService cacheService;
+
     @Override
     public boolean isValid(WeatherEvent weatherEvent) {
-        Optional<WeatherRuleSetEntity> ruleOpt = findRuleSetForRegion(weatherEvent.getCity());
+        Optional<WeatherRuleSetEntity> ruleOpt = cacheService.findRuleSetForRegion(weatherEvent.getCity());
         return ruleOpt
                 .map(rule ->
                         (rule.getTemperatureThreshold() == null || weatherEvent.getTemperature() > rule.getTemperatureThreshold())
@@ -34,16 +36,7 @@ public class WeatherRuleServiceImpl implements WeatherRuleSetService {
     }
 
     @Override
-    public List<WeatherRuleSetEntity> findByRegionIn(Collection<String> regions) {
-        return weatherRuleSetRepository.findByRegionIn(regions);
-    }
-
-    @Override
     public List<WeatherRuleSetEntity> save(List<WeatherRuleSetEntity> weatherRuleSets) {
         return weatherRuleSetRepository.saveAll(weatherRuleSets);
-    }
-
-    private Optional<WeatherRuleSetEntity> findRuleSetForRegion(String city) {
-        return weatherRuleSetRepository.findByRegionIgnoreCase(city);
     }
 }

@@ -6,33 +6,33 @@ import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.Named;
-import org.sideprj.openweathermicroservices.avro.AlertSeverity;
-import org.sideprj.openweathermicroservices.avro.HotWeatherAlertEvent;
+import org.sideprj.openweathermicroservices.avro.Severity;
+import org.sideprj.openweathermicroservices.avro.WeatherAlertEvent;
 import org.sideprj.openweathermicroservices.avro.WeatherEvent;
+import org.sideprj.openweathermicroservices.avro.WeatherMetrics;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        imports = {UUID.class, Instant.class}
+        imports = {UUID.class, Instant.class, Severity.class}
 )
 public interface HotWeatherEventMapper {
 
-    @Mapping(target = "temperatureDeviation", ignore = true)
-    @Mapping(target = "sourceEventId", ignore = true)
-    @Mapping(target = "severity", source = "weatherEvent.temperature", qualifiedByName = "mapSeverity")
-    @Mapping(target = "ruleId", ignore = true)
-    @Mapping(target = "ruleDescription", ignore = true)
-    @Mapping(target = "heatIndex", ignore = true)
-    @Mapping(target = "dewPoint", ignore = true)
+    @Mapping(target = "severity", ignore = true)
+    @Mapping(target = "reason", ignore = true)
+    @Mapping(target = "metricsBuilder", ignore = true)
+    @Mapping(target = "metrics", expression = "java(toWeatherMetrics(weatherEvent, heatIndex, dewPoint))")
     @Mapping(target = "alertId", expression = "java(UUID.randomUUID())")
-    @Mapping(target = "detectedAt", ignore = true)
-    HotWeatherAlertEvent toHotWeatherAlertEvent(WeatherEvent weatherEvent);
+    WeatherAlertEvent toWeatherAlertEvent(
+            WeatherEvent weatherEvent,
+            UUID sourceEventId,
+            double heatIndex,
+            double dewPoint
+    );
 
-    @Named("mapSeverity")
-    default AlertSeverity mapSeverity(double temp) {
-        if (temp >= 35 && temp <= 40) {
-            return AlertSeverity.WARNING;
-        }
-        return AlertSeverity.CRITICAL;
-    }
+    @Mapping(target = "temperatureDeviation", expression = "java(Double.NaN)")
+    WeatherMetrics toWeatherMetrics(
+            WeatherEvent weatherEvent,
+            double heatIndex,
+            double dewPoint
+    );
 }

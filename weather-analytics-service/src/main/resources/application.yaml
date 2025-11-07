@@ -51,6 +51,13 @@ kafka:
   alert:
     topic:
       hot_weather: alert-hot-weather
+  weather:
+    topic:
+      ignored: weather-ignored
+  analytics:
+    topic:
+      invalid: analytics-invalid
+    sliding-window-duration: 10m
 
 weather:
   heat-index-alert: 40

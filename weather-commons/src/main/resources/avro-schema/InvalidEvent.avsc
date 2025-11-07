@@ -1,0 +1,41 @@
+{
+  "type": "record",
+  "name": "InvalidEvent",
+  "namespace": "org.sideprj.openweathermicroservices.avro",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "city",
+      "type": "string"
+    },
+    {
+      "name": "country",
+      "type": "string"
+    },
+    {
+      "name": "temperature",
+      "type": "double"
+    },
+    {
+      "name": "humidity",
+      "type": "double"
+    },
+    {
+      "name": "reason",
+      "type": "string"
+    },
+    {
+      "name": "evaluatedAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}
