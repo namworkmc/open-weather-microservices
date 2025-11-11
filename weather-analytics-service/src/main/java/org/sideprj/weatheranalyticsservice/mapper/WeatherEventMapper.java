@@ -13,5 +13,5 @@ public interface WeatherEventMapper {
     @Mapping(target = "lastModifiedAt", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    WeatherEventEntity toEntity(WeatherEvent message);
+    WeatherEventEntity toEntity(WeatherEvent event);
 }

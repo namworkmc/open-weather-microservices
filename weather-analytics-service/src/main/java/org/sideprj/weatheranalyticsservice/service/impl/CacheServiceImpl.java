@@ -20,7 +20,7 @@ public class CacheServiceImpl implements AnalyticsCacheService {
 
     @Cacheable(cacheNames = "RULE_SET_FOR_REGION", key = "#city")
     @Override
-    public Optional<WeatherRuleSetEntity> findRuleSetForRegion(String city) {
+    public Optional<WeatherRuleSetEntity> getRuleSetByCity(String city) {
         return weatherRuleSetRepository.findByRegionIgnoreCase(city);
     }
 }

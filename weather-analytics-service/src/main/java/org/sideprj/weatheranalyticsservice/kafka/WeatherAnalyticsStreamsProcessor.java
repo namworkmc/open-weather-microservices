@@ -11,10 +11,11 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.sideprj.openweathermicroservices.avro.InvalidEvent;
 import org.sideprj.openweathermicroservices.avro.Severity;
-import org.sideprj.openweathermicroservices.avro.WeatherAlertEvent;
 import org.sideprj.openweathermicroservices.avro.WeatherEvent;
 import org.sideprj.weatheranalyticsservice.mapper.HotWeatherEventMapper;
+import org.sideprj.weatheranalyticsservice.mapper.WeatherEventMapper;
 import org.sideprj.weatheranalyticsservice.service.AnalyticsCacheService;
+import org.sideprj.weatheranalyticsservice.service.WeatherEventService;
 import org.sideprj.weatheranalyticsservice.service.WeatherRuleSetService;
 import org.sideprj.weatheranalyticsservice.util.DerivedMetricsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,19 @@ public class WeatherAnalyticsStreamsProcessor {
     @Value("${weather.dew-point-alert}")
     private double dewPointAlert;
 
-    private final WeatherRuleSetService weatherRuleService;
-
     private final SerdeFactoryFactory serdeFactoryFactory;
 
+    //### Mappers ###
     private final HotWeatherEventMapper hotWeatherEventMapper;
 
+    private final WeatherEventMapper weatherEventMapper;
+
+    //### Services ###
+    private final WeatherRuleSetService weatherRuleService;
+
     private final AnalyticsCacheService analyticsCacheService;
+
+    private final WeatherEventService weatherEventService;
 
     @Autowired
     public void process(
@@ -61,8 +68,7 @@ public class WeatherAnalyticsStreamsProcessor {
                 .split()
                 .branch(
                         (key, value) -> weatherRuleService.isValid(value),
-                        Branched.withConsumer(
-                                getValidKStreamConsumer(alertHotWeatherTopic, weatherIgnoredTopic))
+                        Branched.withConsumer(getValidKStreamConsumer(alertHotWeatherTopic, weatherIgnoredTopic))
                 )
                 .defaultBranch(Branched.withConsumer(ks -> ks
                         .mapValues(value -> InvalidEvent.newBuilder()
@@ -78,34 +84,36 @@ public class WeatherAnalyticsStreamsProcessor {
     }
 
     private Consumer<KStream<String, WeatherEvent>> getValidKStreamConsumer(String alertHotWeatherTopic, String weatherIgnoredTopic) {
-        return kStream -> new KafkaStreamBrancher<String, WeatherEvent>()
-                .branch(
-                        (key, value) -> {
-                            var heatIndex = DerivedMetricsUtil.calculateHeatIndex(value.getTemperature(), value.getHumidity());
-                            var dewPoint = DerivedMetricsUtil.calculateDewPoint(value.getTemperature(), value.getHumidity());
-                            return heatIndex > heatIndexAlert || dewPoint > dewPointAlert;
-                        },
-                        ks -> {
-                            KStream<String, WeatherAlertEvent> alertEventKStream = ks.mapValues(value -> {
-                                var alertEvent = hotWeatherEventMapper.toWeatherAlertEvent(
-                                        value,
-                                        value.getEventId(),
-                                        DerivedMetricsUtil.calculateHeatIndex(value.getTemperature(), value.getHumidity()),
-                                        DerivedMetricsUtil.calculateDewPoint(value.getTemperature(), value.getHumidity())
-                                );
-                                alertEvent.setSeverity(getSeverity(value));
-                                return alertEvent;
-                            });
+        return kStream -> {
+            kStream.peek((key, value) -> weatherEventService.save(weatherEventMapper.toEntity(value)));
 
-                            alertEventKStream.to(alertHotWeatherTopic);
-                        }
-                )
-                .defaultBranch(ks -> ks.to(weatherIgnoredTopic))
-                .onTopOf(kStream);
+            new KafkaStreamBrancher<String, WeatherEvent>()
+                    .branch(
+                            (key, value) -> {
+                                var heatIndex = DerivedMetricsUtil.calculateHeatIndex(value.getTemperature(), value.getHumidity());
+                                var dewPoint = DerivedMetricsUtil.calculateDewPoint(value.getTemperature(), value.getHumidity());
+                                return heatIndex > heatIndexAlert || dewPoint > dewPointAlert;
+                            },
+                            ks -> ks
+                                    .mapValues(value -> {
+                                        var alertEvent = hotWeatherEventMapper.toWeatherAlertEvent(
+                                                value,
+                                                value.getEventId(),
+                                                DerivedMetricsUtil.calculateHeatIndex(value.getTemperature(), value.getHumidity()),
+                                                DerivedMetricsUtil.calculateDewPoint(value.getTemperature(), value.getHumidity())
+                                        );
+                                        alertEvent.setSeverity(getSeverity(value));
+                                        return alertEvent;
+                                    })
+                                    .to(alertHotWeatherTopic)
+                    )
+                    .defaultBranch(ks -> ks.to(weatherIgnoredTopic))
+                    .onTopOf(kStream);
+        };
     }
 
     private Severity getSeverity(WeatherEvent weatherEvent) {
-        var ruleSetOpt = analyticsCacheService.findRuleSetForRegion(weatherEvent.getCity());
+        var ruleSetOpt = analyticsCacheService.getRuleSetByCity(weatherEvent.getCity());
         if (ruleSetOpt.isEmpty()) {
             return Severity.LOW;
         }

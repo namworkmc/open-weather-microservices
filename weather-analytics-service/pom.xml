@@ -12,8 +12,11 @@
     
     <artifactId>weather-analytics-service</artifactId>
     <name>weather-analytics-service</name>
-    <description>weather-analytics-service</description>
-    
+
+    <properties>
+        <weather-commons.version>0.0.1-SNAPSHOT</weather-commons.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -38,7 +41,7 @@
         <dependency>
             <groupId>org.sideprj</groupId>
             <artifactId>weather-commons</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${weather-commons.version}</version>
         </dependency>
 
         <!-- Others -->

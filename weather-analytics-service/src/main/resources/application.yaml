@@ -29,9 +29,6 @@ spring:
             serde: org.apache.kafka.common.serialization.Serdes$StringSerde
           value:
             serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
-          deserialization:
-            exception:
-              handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
   data:
     mongodb:
       database: weather-analytics
@@ -54,6 +51,7 @@ kafka:
   weather:
     topic:
       ignored: weather-ignored
+      trends: weather-trends
   analytics:
     topic:
       invalid: analytics-invalid
@@ -67,3 +65,8 @@ weather:
 outbox:
   processor:
     cron: "0 */5 * * * *"
+analytics:
+  avg_temperature_trends:
+    minute_window: 10
+    cron:
+      job: "0 */10 * * * *"

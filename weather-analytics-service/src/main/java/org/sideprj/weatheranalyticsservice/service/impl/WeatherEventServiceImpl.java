@@ -1,5 +1,8 @@
 package org.sideprj.weatheranalyticsservice.service.impl;
 
+import java.time.Instant;
+import java.util.List;
+
 import org.sideprj.weatheranalyticsservice.model.entity.WeatherEventEntity;
 import org.sideprj.weatheranalyticsservice.repository.WeatherEventRepository;
 import org.sideprj.weatheranalyticsservice.service.WeatherEventService;
@@ -31,5 +34,11 @@ public class WeatherEventServiceImpl implements WeatherEventService {
                 .average()
                 .orElse(Double.NaN);
         return currentTemp - avg;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<WeatherEventEntity> getTrendsByMinuteWindow(int avgTemperatureTrendsMinuteWindow) {
+        return weatherEventRepository.getByTimestampGreaterThanEqual(Instant.now().minusSeconds(avgTemperatureTrendsMinuteWindow * 60L));
     }
 }

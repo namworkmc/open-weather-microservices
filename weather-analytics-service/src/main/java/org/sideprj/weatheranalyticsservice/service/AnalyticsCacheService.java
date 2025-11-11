@@ -6,5 +6,5 @@ import org.sideprj.weatheranalyticsservice.model.entity.WeatherRuleSetEntity;
 
 public interface AnalyticsCacheService {
 
-    Optional<WeatherRuleSetEntity> findRuleSetForRegion(String city);
+    Optional<WeatherRuleSetEntity> getRuleSetByCity(String city);
 }

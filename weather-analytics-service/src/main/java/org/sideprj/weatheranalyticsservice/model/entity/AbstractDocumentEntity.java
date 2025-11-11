@@ -8,18 +8,20 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
+@FieldNameConstants
 @Getter
 @Setter
 public abstract class AbstractDocumentEntity extends AuditableEntity {
 
     @Id
     @Field("id")
-    private String id;
+    protected String id;
 
     @Version
     @Field("version")
-    private Long version;
+    protected Long version;
 
     @Override
     public boolean equals(Object o) {

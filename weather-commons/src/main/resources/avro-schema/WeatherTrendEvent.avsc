@@ -1,0 +1,67 @@
+{
+  "type": "record",
+  "name": "WeatherTrendEvent",
+  "namespace": "com.weather.analytics.avro",
+  "fields": [
+    {
+      "name": "city",
+      "type": "string"
+    },
+    {
+      "name": "windowStart",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "windowEnd",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "eventCount",
+      "type": "int"
+    },
+    {
+      "name": "avgTemperature",
+      "type": "double"
+    },
+    {
+      "name": "minTemperature",
+      "type": "double"
+    },
+    {
+      "name": "maxTemperature",
+      "type": "double"
+    },
+    {
+      "name": "avgHumidity",
+      "type": "double"
+    },
+    {
+      "name": "avgWindSpeed",
+      "type": "double"
+    },
+    {
+      "name": "avgPressure",
+      "type": "double"
+    },
+    {
+      "name": "correlationId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "generatedAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}

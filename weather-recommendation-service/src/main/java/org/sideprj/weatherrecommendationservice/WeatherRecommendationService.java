@@ -1,13 +1,12 @@
-package org.sideprj.weatheralertservice;
+package org.sideprj.weatherrecommendationservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WeatherAlertServiceApplication {
+public class WeatherRecommendationService {
 
     public static void main(String[] args) {
-        SpringApplication.run(WeatherAlertServiceApplication.class, args);
+        SpringApplication.run(WeatherRecommendationService.class, args);
     }
-
 }

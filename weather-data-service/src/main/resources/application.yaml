@@ -5,9 +5,6 @@ spring:
     type: redis
     redis:
       time-to-live: 30m
-  data:
-    redis:
-      url: redis://default:3ub9BfeREd5Z10l1ylBUMDVZ44uWpuFU@redis-15812.crce178.ap-east-1-1.ec2.redns.redis-cloud.com:15812
   kafka:
     bootstrap-servers: localhost:9094
     properties:
@@ -78,3 +75,6 @@ openweather:
 scheduler:
   weather:
     cron: "0 */10 * * * *"
+logging:
+  level:
+    org.sideprj.weatherdataservice: DEBUG

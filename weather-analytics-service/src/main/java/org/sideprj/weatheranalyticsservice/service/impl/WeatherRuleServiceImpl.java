@@ -24,7 +24,7 @@ public class WeatherRuleServiceImpl implements WeatherRuleSetService {
 
     @Override
     public boolean isValid(WeatherEvent weatherEvent) {
-        Optional<WeatherRuleSetEntity> ruleOpt = cacheService.findRuleSetForRegion(weatherEvent.getCity());
+        Optional<WeatherRuleSetEntity> ruleOpt = cacheService.getRuleSetByCity(weatherEvent.getCity());
         return ruleOpt
                 .map(rule ->
                         (rule.getTemperatureThreshold() == null || weatherEvent.getTemperature() > rule.getTemperatureThreshold())

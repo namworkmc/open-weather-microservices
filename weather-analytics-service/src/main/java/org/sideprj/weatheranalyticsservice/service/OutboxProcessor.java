@@ -1,11 +1,11 @@
 package org.sideprj.weatheranalyticsservice.service;
 
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class OutboxProcessor {
 

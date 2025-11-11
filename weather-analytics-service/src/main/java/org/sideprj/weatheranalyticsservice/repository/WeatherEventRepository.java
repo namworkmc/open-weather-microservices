@@ -1,5 +1,6 @@
 package org.sideprj.weatheranalyticsservice.repository;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.sideprj.weatheranalyticsservice.model.entity.WeatherEventEntity;
@@ -11,4 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface WeatherEventRepository extends MongoRepository<WeatherEventEntity, String> {
 
     List<WeatherEventEntity> findByCityOrderByCreatedAtDesc(String city, Limit limit);
+
+    List<WeatherEventEntity> getByTimestampGreaterThanEqual(Instant timestampIsGreaterThan);
 }
