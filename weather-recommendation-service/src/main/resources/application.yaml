@@ -7,6 +7,21 @@ spring:
       chat:
         options:
           model: gpt-oss:20b-cloud
+      embedding:
+        base-url: https://integrate.api.nvidia.com
+        options:
+          model: baai/bge-m3
+    vectorstore:
+      mongodb:
+        initialize-schema: true
+        collection-name: vector_store
+        index-name: vector_index
+        path-name: embedding
   data:
     mongodb:
       database: weather-recommendation
+
+logging:
+  level:
+    org.springframework.ai.chat: DEBUG
+    embedding: DEBUG

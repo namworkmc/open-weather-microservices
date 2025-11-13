@@ -28,10 +28,11 @@
     </properties>
 
     <modules>
-        <module>weather-data-service</module>
         <module>weather-analytics-service</module>
-        <module>weather-notification-service</module>
         <module>weather-commons</module>
+        <module>weather-data-service</module>
+        <module>weather-notification-service</module>
+        <module>weather-recommendation-service</module>
     </modules>
 
     <dependencies>
