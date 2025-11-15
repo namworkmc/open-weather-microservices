@@ -10,7 +10,7 @@ spring:
       embedding:
         base-url: https://integrate.api.nvidia.com
         options:
-          model: baai/bge-m3
+          model: nvidia/llama-3.2-nemoretriever-300m-embed-v2
     vectorstore:
       mongodb:
         initialize-schema: true
