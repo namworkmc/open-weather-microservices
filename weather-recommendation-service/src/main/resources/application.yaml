@@ -20,8 +20,107 @@ spring:
   data:
     mongodb:
       database: weather-recommendation
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: recommendation-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        schema.registry.url: http://localhost:8081
+        specific.avro.reader: true
+        spring.json.use.type.headers: false
+    listener:
+      ack-mode: record
 
 logging:
   level:
     org.springframework.ai.chat: DEBUG
     embedding: DEBUG
+
+kafka:
+  weather:
+    topic:
+      trends: weather-trends
+  alert:
+    topic:
+      hot_weather: alert-hot-weather
+
+prompts:
+  weather:
+    recommendation: |
+      You are an expert meteorological assistant.
+      You will receive structured weather information.
+      Your task is to analyze the provided data and generate a practical, human-friendly recommendation.
+      
+      INPUT DATA:
+        - City: {city}
+      
+        - Average temperature: {avgTemperature}
+        - Minimum temperature: {minTemperature}
+        - Maximum temperature: {maxTemperature}
+        - Average humidity: {avgHumidity}
+        - Average wind speed: {avgWindSpeed}
+        - Average pressure: {avgPressure}
+      
+      REQUIREMENTS:
+      1. Use ONLY the given input data; do not invent additional weather facts.
+      2. Provide a concise recommendation focused on safety, comfort, and planning.
+      3. Explain the reasoning clearly but briefly.
+      4. Format your final response in the following structure:
+        
+        RECOMMENDATION:
+        <one-paragraph recommendation>
+        
+        RATIONALE:
+        <explain the key weather factors influencing the recommendation>
+      
+      5. The response must be deterministic, grounded, and reusable for vector storage.
+      
+      Begin now.
+
+    summary: |
+      You are an expert meteorological assistant. You will receive structured daily weather statistics.
+      Your task is to produce a short, factual SUMMARY and one clear RECOMMENDATION based only on the provided values.
+      
+      INPUT DATA:
+        - City: {city}
+        - Date: {date}
+  
+        - Average temperature (°C): {avgTemperature}
+        - Minimum temperature (°C): {minTemperature}
+        - Maximum temperature (°C): {maxTemperature}
+        - Average humidity (%): {avgHumidity}
+        - Average wind speed (km/h): {avgWindSpeed}
+        - Average pressure (hPa): {avgPressure}
+      
+      RULES:
+      1. Use ONLY the input values. Do NOT invent or assume any other weather facts.
+      2. Keep language concise, factual, and deterministic (avoid hedging like "maybe", "could").
+      3. Output must be compact and follow the EXACT structure below (no extra sections).
+      
+      OUTPUT FORMAT (MANDATORY):
+      SUMMARY:
+      <One short paragraph (1-2 sentences) describing overall conditions using input numbers.>
+      
+      KEY POINTS:
+        - Temperature: <one short bullet stating avg/min/max with simple interpretation>
+        - Humidity: <one short bullet with value and interpretation>
+        - Wind: <one short bullet with wind speed and any caution if > 40 km/h>
+        - Precipitation: <one short bullet with chance% and direct implication>
+        - UV & AQI:
+            <one short bullet: if UV >= 6 mention sun protection; if AQI > 100 mention poor air quality; otherwise "UV/AQI normal">
+      
+      RECOMMENDATION:
+      <One concise sentence with clear action(s) for safety / comfort / planning.>
+      
+      RATIONALE:
+      <1-3 short bullets tying the recommendation to specific input values (mention the field names and numbers).>
+      
+      NOTE:
+        - Keep each bullet ≤ 20 words.
+        - The whole response should be 6–10 short lines so it is compact for vector storage.
+        - Begin output immediately with "SUMMARY:" — do not add any preamble.
+      
+      End.
