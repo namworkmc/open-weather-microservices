@@ -18,6 +18,7 @@ import org.sideprj.weatheranalyticsservice.service.AnalyticsCacheService;
 import org.sideprj.weatheranalyticsservice.service.WeatherEventService;
 import org.sideprj.weatheranalyticsservice.service.WeatherRuleSetService;
 import org.sideprj.weatheranalyticsservice.util.DerivedMetricsUtil;
+import org.sideprj.weathercommons.kafka.SerdeFactoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.KafkaStreamBrancher;
@@ -27,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class WeatherAnalyticsStreamsProcessor {
+public class AnalyticsStreamsProcessor {
 
     @Value("${kafka.analytics.sliding-window-duration}")
     private Duration analyticsSlidingWindowDuration;

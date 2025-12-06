@@ -22,13 +22,15 @@ spring:
       database: weather-recommendation
   kafka:
     bootstrap-servers: localhost:9094
+    properties:
+      schema.registry.url: http://localhost:8081
+      specific.avro.reader: true
     consumer:
       group-id: recommendation-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
         spring.json.trusted.packages: "*"
-        schema.registry.url: http://localhost:8081
         specific.avro.reader: true
         spring.json.use.type.headers: false
     listener:
@@ -43,9 +45,10 @@ kafka:
   weather:
     topic:
       trends: weather-trends
-  alert:
-    topic:
-      hot_weather: alert-hot-weather
+    alert:
+      topic:
+        hot_weather: alert-hot-weather
+        window-size: 30m
 
 prompts:
   weather:
@@ -122,5 +125,70 @@ prompts:
         - Keep each bullet ≤ 20 words.
         - The whole response should be 6–10 short lines so it is compact for vector storage.
         - Begin output immediately with "SUMMARY:" — do not add any preamble.
+      
+      End.
+    weatherAlertSummary: |
+      You are an expert meteorological alert analyst. You will receive the fields of a WeatherAlertEvent.
+      Your task is to generate a concise, factual summary explaining:
+      - What happened
+      - Why the alert was triggered
+      - How severe the situation is
+      - What metrics exceeded thresholds
+      - What actions may be relevant for safety or awareness
+      
+      Use ONLY the provided data. Do NOT invent missing values or additional weather conditions.
+      
+      INPUT DATA:
+      - Alert ID: {alertId}
+      - Correlation ID: {correlationId}
+      - Source Event ID: {sourceEventId}
+      
+      - City: {city}
+      - Country: {country}
+      - Severity: {severity}
+      - Reason: {reason}
+      
+      METRICS:
+      - Temperature: {temperature} °C
+      - Humidity: {humidity} %
+      - Heat Index: {heatIndex} °C
+      - Dew Point: {dewPoint} °C
+      - Temperature Deviation: {temperatureDeviation} °C
+      
+      - Timestamp: {timestamp}
+      
+      IMPORTANT RULES:
+      1. The alert occurs because heatIndex and/or dewPoint exceeded predefined thresholds.  
+         Explain this fact explicitly using only the values provided.  
+      2. Keep the summary deterministic, precise, and grounded strictly in the input fields.  
+      3. Avoid vague language. No predictions. No assumptions about future conditions.  
+      4. Use a fixed structure exactly as shown below. No extra sections.
+      
+      OUTPUT FORMAT (MANDATORY):
+      
+      SUMMARY:
+      <2–3 sentence paragraph summarizing what happened, where it occurred, and the severity.>
+      
+      TRIGGER CAUSE:
+      - Heat Index: {heatIndex} °C — state clearly if this value exceeds the expected threshold.
+      - Dew Point: {dewPoint} °C — state clearly if this value exceeds the expected threshold.
+      - Additional contributing metric(s): mention temperature, humidity, or temperatureDeviation only if directly relevant.
+      
+      DETAILS:
+      - Location: {city}, {country}
+      - Severity Level: {severity}
+      - Reason: <use the provided {reason} without rewriting its core meaning>
+      - Timestamp: {timestamp}
+      
+      RECOMMENDATION:
+      <One deterministic sentence with actionable advice relevant to elevated heatIndex/dewPoint conditions.>
+      
+      RATIONALE:
+      - Explain in 1–3 bullets how the provided metrics justify the recommendation.
+      
+      NOTE:
+      - Begin immediately with "SUMMARY:" in the final output.
+      - Keep the entire response compact (8–12 lines total) for vector storage.
+      - Never include any information not present in the input.
       
       End.

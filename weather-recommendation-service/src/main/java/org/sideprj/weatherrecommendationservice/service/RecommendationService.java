@@ -8,8 +8,6 @@ public interface RecommendationService {
 
     String getRecommendation(WeatherTrendEvent weatherTrendEvent);
 
-    String getRecommendation(WeatherAlertEvent weatherAlertEvent);
-
     String summarizeWeatherEvent(WeatherTrendEvent weatherTrendEvent);
 
     String summarizeWeatherEvent(WeatherAlertEvent weatherAlertEvent);

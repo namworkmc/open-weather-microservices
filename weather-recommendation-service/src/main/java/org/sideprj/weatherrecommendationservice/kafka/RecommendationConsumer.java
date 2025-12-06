@@ -3,7 +3,6 @@ package org.sideprj.weatherrecommendationservice.kafka;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.sideprj.openweathermicroservices.avro.WeatherAlertEvent;
 import org.sideprj.weatherrecommendationservice.service.RecommendationService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -26,10 +25,5 @@ public class RecommendationConsumer {
     public void consumeWeatherTrends(WeatherTrendEvent weatherTrendEvent) {
         executorService.execute(() -> recommendationService.getRecommendation(weatherTrendEvent));
         executorService.execute(() -> recommendationService.summarizeWeatherEvent(weatherTrendEvent));
-    }
-
-    @KafkaListener(topics = "${kafka.alert.topic.hot_weather}")
-    public void consumeHotWeatherAlert(WeatherAlertEvent weatherAlertEvent) {
-        // TODO to implement
     }
 }

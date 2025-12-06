@@ -1,21 +1,14 @@
-package org.sideprj.weatheranalyticsservice.kafka;
+package org.sideprj.weathercommons.kafka;
 
 import java.util.Map;
 
 import org.apache.avro.specific.SpecificRecord;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
-import org.springframework.stereotype.Component;
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-@Component
-public class SerdeFactoryFactory {
-
-    private final KafkaProperties kafkaProperties;
-
+public record SerdeFactoryFactory(KafkaProperties kafkaProperties) {
     public <T extends SpecificRecord> SpecificAvroSerde<T> createAvroSerde() {
         SpecificAvroSerde<T> serde = new SpecificAvroSerde<>();
         serde.configure(

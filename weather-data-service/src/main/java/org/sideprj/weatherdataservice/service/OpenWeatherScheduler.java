@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WeatherScheduler {
+public class OpenWeatherScheduler {
 
     private static final Pair<Integer, Integer> MIN_MAX_TEMP = Pair.of(-50, 60);
     private static final Pair<Integer, Integer> MIN_MAX_HUMIDITY = Pair.of(0, 100);
@@ -39,8 +39,6 @@ public class WeatherScheduler {
 
     private final DataRawKafkaProducer dataRawProducer;
 
-    private final CacheService cacheService;
-
     @Scheduled(cron = "${scheduler.weather.cron:-}")
     public void sendWeatherUpdate() {
         supportedCities
@@ -54,13 +52,10 @@ public class WeatherScheduler {
                     }
                 })
                 .filter(Objects::nonNull)
-                .filter(weatherRes -> cacheService.getLastFetchedTime(weatherRes.getName()).isEmpty())
                 .map(weatherRes -> weatherMapper.toWeatherEvent(weatherRes, LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
                 .forEach(weatherEvent -> {
                     log.info("Sending weather event: {}", weatherEvent);
                     var key = weatherEvent.getCity();
-                    cacheService.putLastFetchedTime(key, DataServiceDateUtil.toLocalDateTime(weatherEvent.getTimestamp()));
-
                     if (isWeatherTimestampValid(weatherEvent)) {
                         if (!isWeatherDataInRange(weatherEvent)) {
                             weatherEvent.setDataQuality(DataQuality.OUT_OF_RANGE);

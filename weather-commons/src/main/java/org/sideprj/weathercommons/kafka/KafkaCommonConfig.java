@@ -1,5 +1,6 @@
 package org.sideprj.weathercommons.kafka;
 
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -24,5 +25,10 @@ public class KafkaCommonConfig {
                 (re, ex, attempt) -> log.error("DLT forwarding after {} attempts: {}", attempt, re, ex)
         );
         return handler;
+    }
+
+    @Bean
+    public SerdeFactoryFactory serdeFactoryFactory(KafkaProperties kafkaProperties) {
+        return new SerdeFactoryFactory(kafkaProperties);
     }
 }

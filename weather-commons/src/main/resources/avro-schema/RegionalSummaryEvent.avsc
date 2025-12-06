@@ -1,0 +1,46 @@
+{
+  "type": "record",
+  "name": "RegionalSummaryEvent",
+  "namespace": "org.sideprj.openweathermicroservices.avro",
+  "fields": [
+    {
+      "name": "regionId",
+      "type": "string"
+    },
+    {
+      "name": "windowStart",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "windowEnd",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "averageTemperature",
+      "type": "double"
+    },
+    {
+      "name": "severity",
+      "default": null,
+      "type": [
+        "null",
+        {
+          "type": "enum",
+          "name": "Severity",
+          "symbols": [
+            "LOW",
+            "MODERATE",
+            "HIGH",
+            "EXTREME"
+          ]
+        }
+      ]
+    }
+  ]
+}

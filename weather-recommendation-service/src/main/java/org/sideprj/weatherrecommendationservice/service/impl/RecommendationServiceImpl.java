@@ -1,6 +1,7 @@
 package org.sideprj.weatherrecommendationservice.service.impl;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.sideprj.openweathermicroservices.avro.WeatherAlertEvent;
 import org.sideprj.weatherrecommendationservice.llm.EnabledStoreVector;
@@ -24,49 +25,77 @@ public class RecommendationServiceImpl implements RecommendationService {
     @Value("${prompts.weather.summary}")
     private String weatherSummaryPrompt;
 
+    @Value("${prompts.weather.weatherAlertSummary}")
+    private String weatherAlertSummary;
+
     private final ChatClient chatClient;
 
     @Override
-    @EnabledStoreVector(metadata = "city")
+    @EnabledStoreVector("city")
     public String getRecommendation(WeatherTrendEvent weatherTrendEvent) {
-        var recommendationTemplate = new SystemPromptTemplate(weatherRecommendationPrompt);
-        var prompt = recommendationTemplate.create(Map.of(
-                "city", weatherTrendEvent.getCity(),
-                "avgTemperature", weatherTrendEvent.getAvgTemperature(),
-                "minTemperature", weatherTrendEvent.getMinTemperature(),
-                "maxTemperature", weatherTrendEvent.getMaxTemperature(),
-                "avgHumidity", weatherTrendEvent.getAvgHumidity(),
-                "avgWindSpeed", weatherTrendEvent.getAvgWindSpeed(),
-                "avgPressure", weatherTrendEvent.getAvgPressure()
-        ));
-
-        return chatClient.prompt(prompt).call().content();
+        return chatClient.prompt(
+                        new SystemPromptTemplate(weatherRecommendationPrompt)
+                                .create(
+                                        Map.of(
+                                                "city", weatherTrendEvent.getCity(),
+                                                "avgTemperature", weatherTrendEvent.getAvgTemperature(),
+                                                "minTemperature", weatherTrendEvent.getMinTemperature(),
+                                                "maxTemperature", weatherTrendEvent.getMaxTemperature(),
+                                                "avgHumidity", weatherTrendEvent.getAvgHumidity(),
+                                                "avgWindSpeed", weatherTrendEvent.getAvgWindSpeed(),
+                                                "avgPressure", weatherTrendEvent.getAvgPressure()
+                                        )
+                                )
+                )
+                .call()
+                .content();
     }
 
     @Override
-    public String getRecommendation(WeatherAlertEvent weatherAlertEvent) {
-        return "";
-    }
-
-    @Override
-    @EnabledStoreVector(metadata = {"city", "generatedAt"})
+    @EnabledStoreVector({"city", "generatedAt"})
     public String summarizeWeatherEvent(WeatherTrendEvent weatherTrendEvent) {
-        var summaryTemplate = new SystemPromptTemplate(weatherSummaryPrompt);
-        var prompt = summaryTemplate.create(Map.of(
-                "city", weatherTrendEvent.getCity(),
-                "date", weatherTrendEvent.getGeneratedAt(),
-                "avgTemperature", weatherTrendEvent.getAvgTemperature(),
-                "minTemperature", weatherTrendEvent.getMinTemperature(),
-                "maxTemperature", weatherTrendEvent.getMaxTemperature(),
-                "avgHumidity", weatherTrendEvent.getAvgHumidity(),
-                "avgWindSpeed", weatherTrendEvent.getAvgWindSpeed(),
-                "avgPressure", weatherTrendEvent.getAvgPressure()
-        ));
-        return chatClient.prompt(prompt).call().content();
+        return chatClient.prompt(
+                        new SystemPromptTemplate(weatherSummaryPrompt)
+                                .create(
+                                        Map.of(
+                                                "city", weatherTrendEvent.getCity(),
+                                                "date", weatherTrendEvent.getGeneratedAt(),
+                                                "avgTemperature", weatherTrendEvent.getAvgTemperature(),
+                                                "minTemperature", weatherTrendEvent.getMinTemperature(),
+                                                "maxTemperature", weatherTrendEvent.getMaxTemperature(),
+                                                "avgHumidity", weatherTrendEvent.getAvgHumidity(),
+                                                "avgWindSpeed", weatherTrendEvent.getAvgWindSpeed(),
+                                                "avgPressure", weatherTrendEvent.getAvgPressure()
+                                        )
+                                )
+                )
+                .call()
+                .content();
     }
 
     @Override
     public String summarizeWeatherEvent(WeatherAlertEvent weatherAlertEvent) {
-        return "";
+        return chatClient.prompt(
+                        new SystemPromptTemplate(weatherAlertSummary)
+                                .create(
+                                        Map.ofEntries(
+                                                Map.entry("alertId", weatherAlertEvent.getAlertId()),
+                                                Map.entry("correlationId", weatherAlertEvent.getCorrelationId()),
+                                                Map.entry("sourceEventId", weatherAlertEvent.getSourceEventId()),
+                                                Map.entry("city", weatherAlertEvent.getCity()),
+                                                Map.entry("country", weatherAlertEvent.getCountry()),
+                                                Map.entry("severity", weatherAlertEvent.getSeverity()),
+                                                Map.entry("reason", Optional.ofNullable(weatherAlertEvent.getReason()).orElse("")),
+                                                Map.entry("temperature", weatherAlertEvent.getMetrics().getTemperature()),
+                                                Map.entry("humidity", weatherAlertEvent.getMetrics().getHumidity()),
+                                                Map.entry("heatIndex", weatherAlertEvent.getMetrics().getHeatIndex()),
+                                                Map.entry("dewPoint", weatherAlertEvent.getMetrics().getDewPoint()),
+                                                Map.entry("temperatureDeviation", weatherAlertEvent.getMetrics().getTemperatureDeviation()),
+                                                Map.entry("timestamp", weatherAlertEvent.getTimestamp())
+                                        )
+                                )
+                )
+                .call()
+                .content();
     }
 }

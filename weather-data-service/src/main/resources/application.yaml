@@ -2,9 +2,7 @@ spring:
   application:
     name: weather-data-service
   cache:
-    type: redis
-    redis:
-      time-to-live: 30m
+    type: none
   kafka:
     bootstrap-servers: localhost:9094
     properties:
@@ -34,7 +32,7 @@ resilience4j:
           - org.springframework.web.client.HttpServerErrorException
           - java.io.IOException
     instances:
-      openWeatherApiClient:
+      OpenWeatherApiClient:
         base-config: default
   retry:
     configs:
@@ -44,7 +42,7 @@ resilience4j:
           - org.springframework.web.client.HttpServerErrorException
           - java.io.IOException
     instances:
-      openWeatherApiClient:
+      OpenWeatherApiClient:
         base-config: default
   ratelimiter:
     configs:
@@ -56,7 +54,7 @@ resilience4j:
           seconds: 0
         register-health-indicator: true
     instances:
-      openWeatherApiClient:
+      OpenWeatherApiClient:
         base-config: default
 
 kafka:
